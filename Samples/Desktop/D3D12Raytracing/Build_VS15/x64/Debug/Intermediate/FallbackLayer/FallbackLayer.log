@@ -1,0 +1,30 @@
+﻿  AccelerationStructureBuilderFactory.cpp
+  AccelerationStructureValidator.cpp
+  BitonicSort.cpp
+  BVHTraversalShaderBuilder.cpp
+  BVHValidator.cpp
+  ConstructAABBPass.cpp
+  ConstructHierarchyPass.cpp
+  CpuBVH2Builder.cpp
+  DxbcParser.cpp
+  FallbackDebug.cpp
+  GpuBVH2Copy.cpp
+  LoadInstancesPass.cpp
+  LoadPrimitivesPass.cpp
+  PostBuildInfoQuery.cpp
+  StateObjectProcessing.cpp
+  TreeletReorder.cpp
+  UberShaderRayTracingProgram.cpp
+  DxilShaderPatcher.cpp
+  FallbackLayer.cpp
+  GpuBVH2Builder.cpp
+  Generating Code...
+  Compiling...
+  MortonCodesCalculator.cpp
+  pch.cpp
+  D3D12RaytracingFallback.cpp
+  RayTracingProgramFactory.cpp
+  RearrangeElementsPass.cpp
+  SceneAABBCalculator.cpp
+  Generating Code...
+  FallbackLayer.vcxproj -> C:\heajung\GitHub\function_test\DirectX-Graphics-Samples\Samples\Desktop\D3D12Raytracing\src\..\Build_VS15\x64\Debug\Output\FallbackLayer\FallbackLayer.lib

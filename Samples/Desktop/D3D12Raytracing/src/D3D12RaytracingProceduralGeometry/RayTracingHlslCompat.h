@@ -29,6 +29,8 @@ using namespace DirectX;
 typedef UINT16 Index;
 #endif
 
+#define AABB_CNT 10
+
 // Number of metaballs to use within an AABB.
 #define N_METABALLS 3    // = {3, 5}
 

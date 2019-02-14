@@ -1,0 +1,11 @@
+﻿  stdafx.cpp
+  DeviceResources.cpp
+  Win32Application.cpp
+  D3D12RaytracingSimpleLighting.cpp
+  DXSample.cpp
+  Main.cpp
+  Generating Code...
+  D3D12RaytracingSimpleLighting.vcxproj -> C:\heajung\GitHub\function_test\DirectX-Graphics-Samples\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingSimpleLighting\bin\x64\Debug\D3D12RaytracingSimpleLighting.exe
+  Sideloading DXR Fallback Compiler.
+  "C:\heajung\GitHub\function_test\DirectX-Graphics-Samples\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingSimpleLighting\bin\x64\Debug\"
+          1개 파일이 복사되었습니다.

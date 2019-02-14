@@ -12,6 +12,8 @@
 #include "stdafx.h"
 #include "D3D12RaytracingProceduralGeometry.h"
 #include "CompiledShaders\Raytracing.hlsl.h"
+#include <iostream>
+#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
 
 using namespace std;
 using namespace DX;
@@ -23,6 +25,7 @@ const wchar_t* D3D12RaytracingProceduralGeometry::c_intersectionShaderNames[] =
     L"MyIntersectionShader_AnalyticPrimitive",
     L"MyIntersectionShader_VolumetricPrimitive",
     L"MyIntersectionShader_SignedDistancePrimitive",
+	L"MyIntersectionShader_AnalyticPrimitive",
 };
 const wchar_t* D3D12RaytracingProceduralGeometry::c_closestHitShaderNames[] =
 {
@@ -43,6 +46,7 @@ const wchar_t* D3D12RaytracingProceduralGeometry::c_hitGroupNames_AABBGeometry[]
     { L"MyHitGroup_AABB_AnalyticPrimitive", L"MyHitGroup_AABB_AnalyticPrimitive_ShadowRay" },
     { L"MyHitGroup_AABB_VolumetricPrimitive", L"MyHitGroup_AABB_VolumetricPrimitive_ShadowRay" },
     { L"MyHitGroup_AABB_SignedDistancePrimitive", L"MyHitGroup_AABB_SignedDistancePrimitive_ShadowRay" },
+	{ L"MyHitGroup_AABB_AnalyticPrimitive_2", L"MyHitGroup_AABB_AnalyticPrimitive_ShadowRay_2" },
 };
 
 D3D12RaytracingProceduralGeometry::D3D12RaytracingProceduralGeometry(UINT width, UINT height, std::wstring name) :
@@ -184,7 +188,14 @@ void D3D12RaytracingProceduralGeometry::UpdateAABBPrimitiveAttributes(float anim
         SetTransformForAABB(offset + Cog, mIdentity, mRotation);
         SetTransformForAABB(offset + Cylinder, mScale15y, mIdentity);
         SetTransformForAABB(offset + FractalPyramid, mScale3, mIdentity);
+		offset += SignedDistancePrimitive::Count;
     }
+
+	{
+		for (int i = 0; i < AABB_CNT; i++) {
+			SetTransformForAABB(offset + i, mIdentity, mIdentity);
+		}				
+	}
 }
 
 // Initialize scene rendering parameters.
@@ -246,7 +257,13 @@ void D3D12RaytracingProceduralGeometry::InitializeScene()
             SetAttributes(offset + Cog, yellow, 0, 1.0f, 0.1f, 2);
             SetAttributes(offset + Cylinder, red);
             SetAttributes(offset + FractalPyramid, green, 0, 1, 0.1f, 4, 0.8f);
+			offset += SignedDistancePrimitive::Count;
         }
+		{
+			for (int i = 0; i < AABB_CNT; i++) {
+				SetAttributes(offset + i, XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f));
+			}			
+		}
     }
 
     // Setup camera.
@@ -676,7 +693,17 @@ void D3D12RaytracingProceduralGeometry::BuildProceduralGeometryAABBs()
             m_aabbs[offset + Cog] = InitializeAABB(XMINT3(1, 0, 0), XMFLOAT3(2, 2, 2));
             m_aabbs[offset + Cylinder] = InitializeAABB(XMINT3(0, 0, 3), XMFLOAT3(2, 3, 2));
             m_aabbs[offset + FractalPyramid] = InitializeAABB(XMINT3(2, 0, 2), XMFLOAT3(6, 6, 6));
+			offset += SignedDistancePrimitive::Count;
         }
+
+		//aabbtest
+		{				
+			for (int i = 0; i < AABB_CNT; i++) {					
+				float randomX = float(std::rand() % 6);
+				//float randomY = float(std::rand() % 3) - 1.5f;				
+				m_aabbs[offset + i] = InitializeAABB(XMINT3(2, 0, 0), XMFLOAT3(randomX, 0.1f, 0.1f));				
+			}			
+		}
         AllocateUploadBuffer(device, m_aabbs.data(), m_aabbs.size()*sizeof(m_aabbs[0]), &m_aabbBuffer.resource);
     }
 }
