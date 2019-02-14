@@ -149,12 +149,20 @@ void D3D12RaytracingProceduralGeometry::UpdateAABBPrimitiveAttributes(float anim
     // Apply scale, rotation and translation transforms.
     // The intersection shader tests in this sample work with local space, so here
     // we apply the BLAS object space translation that was passed to geometry descs.
-    auto SetTransformForAABB = [&](UINT primitiveIndex, XMMATRIX& mScale, XMMATRIX& mRotation)
+    auto SetTransformForAABB = [&](UINT primitiveIndex, XMMATRIX& mScale, XMMATRIX& mRotation, bool bTranslate = false, XMMATRIX& mTranslate = XMMatrixIdentity())
     {
         XMVECTOR vTranslation = 
             0.5f * ( XMLoadFloat3(reinterpret_cast<XMFLOAT3*>(&m_aabbs[primitiveIndex].MinX))
                    + XMLoadFloat3(reinterpret_cast<XMFLOAT3*>(&m_aabbs[primitiveIndex].MaxX)));
         XMMATRIX mTranslation = XMMatrixTranslationFromVector(vTranslation);
+
+		XMFLOAT4 t;
+		XMStoreFloat4(&t, vTranslation);
+		cout << primitiveIndex << ", (" << t.x << ", " << t.y << ", " << t.z << ")" << endl;//6,0.5,-6
+
+		if (bTranslate) {
+			mTranslation = mTranslate;
+		}
 
         XMMATRIX mTransform = mScale * mRotation * mTranslation;
         m_aabbPrimitiveAttributeBuffer[primitiveIndex].localSpaceToBottomLevelAS = mTransform;
@@ -193,7 +201,8 @@ void D3D12RaytracingProceduralGeometry::UpdateAABBPrimitiveAttributes(float anim
 
 	{
 		for (int i = 0; i < AABB_CNT; i++) {
-			SetTransformForAABB(offset + i, mIdentity, mIdentity);
+			float randomX = float(std::rand() % 7) - 3;
+			SetTransformForAABB(offset + i, mIdentity, mIdentity, true, XMMatrixTranslation(0.0f, 0.0f, 0.0f));
 		}				
 	}
 }
@@ -269,7 +278,7 @@ void D3D12RaytracingProceduralGeometry::InitializeScene()
     // Setup camera.
     {
         // Initialize the view and projection inverse matrices.
-        m_eye = { 0.0f, 5.3f, -17.0f, 1.0f }; 
+        m_eye = { 0.0f, 5.3f, -27.0f, 1.0f }; 
         m_at = { 0.0f, 0.0f, 0.0f, 1.0f };
         XMVECTOR right = { 1.0f, 0.0f, 0.0f, 0.0f };
 
@@ -699,9 +708,9 @@ void D3D12RaytracingProceduralGeometry::BuildProceduralGeometryAABBs()
 		//aabbtest
 		{				
 			for (int i = 0; i < AABB_CNT; i++) {					
-				float randomX = float(std::rand() % 6);
+				//float randomX = float(std::rand() % 7) - 3;
 				//float randomY = float(std::rand() % 3) - 1.5f;				
-				m_aabbs[offset + i] = InitializeAABB(XMINT3(2, 0, 0), XMFLOAT3(randomX, 0.1f, 0.1f));				
+				m_aabbs[offset + i] = InitializeAABB(XMINT3(0, 0, 0), XMFLOAT3(3, 3, 3));
 			}			
 		}
         AllocateUploadBuffer(device, m_aabbs.data(), m_aabbs.size()*sizeof(m_aabbs[0]), &m_aabbBuffer.resource);
