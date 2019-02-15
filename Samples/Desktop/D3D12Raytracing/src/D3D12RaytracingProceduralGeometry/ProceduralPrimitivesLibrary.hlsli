@@ -36,13 +36,16 @@ bool RayAnalyticGeometryIntersectionTest(in Ray ray, in AnalyticPrimitive::Enum 
         float3(1,1,1)
     };
     float tmax;
-
+#if 0
     switch (analyticPrimitive)
     {
     case AnalyticPrimitive::AABB: return RayAABBIntersectionTest(ray, aabb, thit, attr);
     case AnalyticPrimitive::Spheres: return RaySpheresIntersectionTest(ray, thit, attr);
     default: return false;
     }
+#else
+	return RayAABBIntersectionTest(ray, aabb, thit, attr);
+#endif
 }
 
 // Analytic geometry intersection test.

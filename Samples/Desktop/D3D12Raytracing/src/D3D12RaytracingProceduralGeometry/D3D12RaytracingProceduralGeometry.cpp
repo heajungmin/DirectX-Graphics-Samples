@@ -24,8 +24,7 @@ const wchar_t* D3D12RaytracingProceduralGeometry::c_intersectionShaderNames[] =
 {
     L"MyIntersectionShader_AnalyticPrimitive",
     L"MyIntersectionShader_VolumetricPrimitive",
-    L"MyIntersectionShader_SignedDistancePrimitive",
-	L"MyIntersectionShader_AnalyticPrimitive",
+    L"MyIntersectionShader_SignedDistancePrimitive"	
 };
 const wchar_t* D3D12RaytracingProceduralGeometry::c_closestHitShaderNames[] =
 {
@@ -45,8 +44,7 @@ const wchar_t* D3D12RaytracingProceduralGeometry::c_hitGroupNames_AABBGeometry[]
 {
     { L"MyHitGroup_AABB_AnalyticPrimitive", L"MyHitGroup_AABB_AnalyticPrimitive_ShadowRay" },
     { L"MyHitGroup_AABB_VolumetricPrimitive", L"MyHitGroup_AABB_VolumetricPrimitive_ShadowRay" },
-    { L"MyHitGroup_AABB_SignedDistancePrimitive", L"MyHitGroup_AABB_SignedDistancePrimitive_ShadowRay" },
-	{ L"MyHitGroup_AABB_AnalyticPrimitive_2", L"MyHitGroup_AABB_AnalyticPrimitive_ShadowRay_2" },
+    { L"MyHitGroup_AABB_SignedDistancePrimitive", L"MyHitGroup_AABB_SignedDistancePrimitive_ShadowRay" }
 };
 
 D3D12RaytracingProceduralGeometry::D3D12RaytracingProceduralGeometry(UINT width, UINT height, std::wstring name) :
@@ -149,21 +147,13 @@ void D3D12RaytracingProceduralGeometry::UpdateAABBPrimitiveAttributes(float anim
     // Apply scale, rotation and translation transforms.
     // The intersection shader tests in this sample work with local space, so here
     // we apply the BLAS object space translation that was passed to geometry descs.
-    auto SetTransformForAABB = [&](UINT primitiveIndex, XMMATRIX& mScale, XMMATRIX& mRotation, bool bTranslate = false, XMMATRIX& mTranslate = XMMatrixIdentity())
+    auto SetTransformForAABB = [&](UINT primitiveIndex, XMMATRIX& mScale, XMMATRIX& mRotation)
     {
         XMVECTOR vTranslation = 
             0.5f * ( XMLoadFloat3(reinterpret_cast<XMFLOAT3*>(&m_aabbs[primitiveIndex].MinX))
                    + XMLoadFloat3(reinterpret_cast<XMFLOAT3*>(&m_aabbs[primitiveIndex].MaxX)));
         XMMATRIX mTranslation = XMMatrixTranslationFromVector(vTranslation);
-
-		XMFLOAT4 t;
-		XMStoreFloat4(&t, vTranslation);
-		cout << primitiveIndex << ", (" << t.x << ", " << t.y << ", " << t.z << ")" << endl;//6,0.5,-6
-
-		if (bTranslate) {
-			mTranslation = mTranslate;
-		}
-
+		
         XMMATRIX mTransform = mScale * mRotation * mTranslation;
         m_aabbPrimitiveAttributeBuffer[primitiveIndex].localSpaceToBottomLevelAS = mTransform;
         m_aabbPrimitiveAttributeBuffer[primitiveIndex].bottomLevelASToLocalSpace = XMMatrixInverse(nullptr, mTransform);
@@ -173,8 +163,11 @@ void D3D12RaytracingProceduralGeometry::UpdateAABBPrimitiveAttributes(float anim
     // Analytic primitives.
     {
         using namespace AnalyticPrimitive;
-        SetTransformForAABB(offset + AABB, mScale15y, mIdentity);
-        SetTransformForAABB(offset + Spheres, mScale15, mRotation);
+		for (int i = 0; i < AABB_CNT; i++) {
+			SetTransformForAABB(offset + i, mScale15y, mIdentity);
+		}
+        /*SetTransformForAABB(offset + AABB, mScale15y, mIdentity);
+        SetTransformForAABB(offset + Spheres, mScale15, mRotation);*/
         offset += AnalyticPrimitive::Count;
     }
 
@@ -199,12 +192,6 @@ void D3D12RaytracingProceduralGeometry::UpdateAABBPrimitiveAttributes(float anim
 		offset += SignedDistancePrimitive::Count;
     }
 
-	{
-		for (int i = 0; i < AABB_CNT; i++) {
-			float randomX = float(std::rand() % 7) - 3;
-			SetTransformForAABB(offset + i, mIdentity, mIdentity, true, XMMatrixTranslation(0.0f, 0.0f, 0.0f));
-		}				
-	}
 }
 
 // Initialize scene rendering parameters.
@@ -244,8 +231,11 @@ void D3D12RaytracingProceduralGeometry::InitializeScene()
         // Analytic primitives.
         {
             using namespace AnalyticPrimitive;
-            SetAttributes(offset + AABB, red);
-            SetAttributes(offset + Spheres, ChromiumReflectance, 1);
+			for (int i = 0; i < AABB_CNT; i++) {
+				SetAttributes(offset + i, red);
+			}
+            /*SetAttributes(offset + AABB, red);
+            SetAttributes(offset + Spheres, ChromiumReflectance, 1);*/
             offset += AnalyticPrimitive::Count;
         }
 
@@ -268,11 +258,7 @@ void D3D12RaytracingProceduralGeometry::InitializeScene()
             SetAttributes(offset + FractalPyramid, green, 0, 1, 0.1f, 4, 0.8f);
 			offset += SignedDistancePrimitive::Count;
         }
-		{
-			for (int i = 0; i < AABB_CNT; i++) {
-				SetAttributes(offset + i, XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f));
-			}			
-		}
+		
     }
 
     // Setup camera.
@@ -679,9 +665,15 @@ void D3D12RaytracingProceduralGeometry::BuildProceduralGeometryAABBs()
 
         // Analytic primitives.
         {
-            using namespace AnalyticPrimitive;
-            m_aabbs[offset + AABB] = InitializeAABB(XMINT3(3, 0, 0), XMFLOAT3(2, 3, 2));
-            m_aabbs[offset + Spheres] = InitializeAABB(XMFLOAT3(2.25f, 0, 0.75f), XMFLOAT3(3, 3, 3));
+            using namespace AnalyticPrimitive;            
+			for (int i = 0; i < AABB_CNT; i++) {
+				float x = (rand() % 50 + 1) * 0.1f;//0~5
+				float y = float(rand() % 10 + 1) * 0.1f;
+				float z = (rand() % 50 + 1) * 0.1f;
+				m_aabbs[offset + i] = InitializeAABB(XMFLOAT3(x, y, z), XMFLOAT3(0.2f, 0.2f, 0.2f));
+			}
+			//m_aabbs[offset + AABB] = InitializeAABB(XMINT3(3, 0, 0), XMFLOAT3(2, 3, 2));
+            //m_aabbs[offset + Spheres] = InitializeAABB(XMFLOAT3(2.25f, 0, 0.75f), XMFLOAT3(3, 3, 3));
             offset += AnalyticPrimitive::Count;
         }
 
@@ -704,15 +696,7 @@ void D3D12RaytracingProceduralGeometry::BuildProceduralGeometryAABBs()
             m_aabbs[offset + FractalPyramid] = InitializeAABB(XMINT3(2, 0, 2), XMFLOAT3(6, 6, 6));
 			offset += SignedDistancePrimitive::Count;
         }
-
-		//aabbtest
-		{				
-			for (int i = 0; i < AABB_CNT; i++) {					
-				//float randomX = float(std::rand() % 7) - 3;
-				//float randomY = float(std::rand() % 3) - 1.5f;				
-				m_aabbs[offset + i] = InitializeAABB(XMINT3(0, 0, 0), XMFLOAT3(3, 3, 3));
-			}			
-		}
+				
         AllocateUploadBuffer(device, m_aabbs.data(), m_aabbs.size()*sizeof(m_aabbs[0]), &m_aabbBuffer.resource);
     }
 }

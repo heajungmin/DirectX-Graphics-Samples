@@ -318,37 +318,37 @@ void MyIntersectionShader_AnalyticPrimitive()
 [shader("intersection")]
 void MyIntersectionShader_VolumetricPrimitive()
 {
-    Ray localRay = GetRayInAABBPrimitiveLocalSpace();
-    VolumetricPrimitive::Enum primitiveType = (VolumetricPrimitive::Enum) l_aabbCB.primitiveType;
-    
-    float thit;
-    ProceduralPrimitiveAttributes attr;
-    if (RayVolumetricGeometryIntersectionTest(localRay, primitiveType, thit, attr, g_sceneCB.elapsedTime))
-    {
-        PrimitiveInstancePerFrameBuffer aabbAttribute = g_AABBPrimitiveAttributes[l_aabbCB.instanceIndex];
-        attr.normal = mul(attr.normal, (float3x3) aabbAttribute.localSpaceToBottomLevelAS);
-        attr.normal = normalize(mul((float3x3) ObjectToWorld3x4(), attr.normal));
+    //Ray localRay = GetRayInAABBPrimitiveLocalSpace();
+    //VolumetricPrimitive::Enum primitiveType = (VolumetricPrimitive::Enum) l_aabbCB.primitiveType;
+    //
+    //float thit;
+    //ProceduralPrimitiveAttributes attr;
+    //if (RayVolumetricGeometryIntersectionTest(localRay, primitiveType, thit, attr, g_sceneCB.elapsedTime))
+    //{
+    //    PrimitiveInstancePerFrameBuffer aabbAttribute = g_AABBPrimitiveAttributes[l_aabbCB.instanceIndex];
+    //    attr.normal = mul(attr.normal, (float3x3) aabbAttribute.localSpaceToBottomLevelAS);
+    //    attr.normal = normalize(mul((float3x3) ObjectToWorld3x4(), attr.normal));
 
-        ReportHit(thit, /*hitKind*/ 0, attr);
-    }
+    //    ReportHit(thit, /*hitKind*/ 0, attr);
+    //}
 }
 
 [shader("intersection")]
 void MyIntersectionShader_SignedDistancePrimitive()
 {
-    Ray localRay = GetRayInAABBPrimitiveLocalSpace();
-    SignedDistancePrimitive::Enum primitiveType = (SignedDistancePrimitive::Enum) l_aabbCB.primitiveType;
+    //Ray localRay = GetRayInAABBPrimitiveLocalSpace();
+    //SignedDistancePrimitive::Enum primitiveType = (SignedDistancePrimitive::Enum) l_aabbCB.primitiveType;
 
-    float thit;
-    ProceduralPrimitiveAttributes attr;
-    if (RaySignedDistancePrimitiveTest(localRay, primitiveType, thit, attr, l_materialCB.stepScale))
-    {
-        PrimitiveInstancePerFrameBuffer aabbAttribute = g_AABBPrimitiveAttributes[l_aabbCB.instanceIndex];
-        attr.normal = mul(attr.normal, (float3x3) aabbAttribute.localSpaceToBottomLevelAS);
-        attr.normal = normalize(mul((float3x3) ObjectToWorld3x4(), attr.normal));
-        
-        ReportHit(thit, /*hitKind*/ 0, attr);
-    }
+    //float thit;
+    //ProceduralPrimitiveAttributes attr;
+    //if (RaySignedDistancePrimitiveTest(localRay, primitiveType, thit, attr, l_materialCB.stepScale))
+    //{
+    //    PrimitiveInstancePerFrameBuffer aabbAttribute = g_AABBPrimitiveAttributes[l_aabbCB.instanceIndex];
+    //    attr.normal = mul(attr.normal, (float3x3) aabbAttribute.localSpaceToBottomLevelAS);
+    //    attr.normal = normalize(mul((float3x3) ObjectToWorld3x4(), attr.normal));
+    //    
+    //    ReportHit(thit, /*hitKind*/ 0, attr);
+    //}
 }
 
 #endif // RAYTRACING_HLSL
