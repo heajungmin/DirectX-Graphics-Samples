@@ -44,7 +44,8 @@ bool RayAnalyticGeometryIntersectionTest(in Ray ray, in AnalyticPrimitive::Enum 
     default: return false;
     }
 #else
-	return RayAABBIntersectionTest(ray, aabb, thit, attr);
+	//return RayAABBIntersectionTest(ray, aabb, thit, attr);
+	return RaySpheresIntersectionTest(ray, thit, attr);
 #endif
 }
 

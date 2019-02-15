@@ -264,7 +264,7 @@ void D3D12RaytracingProceduralGeometry::InitializeScene()
     // Setup camera.
     {
         // Initialize the view and projection inverse matrices.
-        m_eye = { 0.0f, 5.3f, -27.0f, 1.0f }; 
+        m_eye = { 0.0f, 5.3f, -17.0f, 1.0f }; 
         m_at = { 0.0f, 0.0f, 0.0f, 1.0f };
         XMVECTOR right = { 1.0f, 0.0f, 0.0f, 0.0f };
 
@@ -667,10 +667,10 @@ void D3D12RaytracingProceduralGeometry::BuildProceduralGeometryAABBs()
         {
             using namespace AnalyticPrimitive;            
 			for (int i = 0; i < AABB_CNT; i++) {
-				float x = (rand() % 50 + 1) * 0.1f;//0~5
+				float x = (rand() % 50 + 1) * 0.1f;
 				float y = float(rand() % 10 + 1) * 0.1f;
 				float z = (rand() % 50 + 1) * 0.1f;
-				m_aabbs[offset + i] = InitializeAABB(XMFLOAT3(x, y, z), XMFLOAT3(0.2f, 0.2f, 0.2f));
+				m_aabbs[offset + i] = InitializeAABB(XMFLOAT3(x, y, z), XMFLOAT3(1.0f, 1.0f, 1.0f));
 			}
 			//m_aabbs[offset + AABB] = InitializeAABB(XMINT3(3, 0, 0), XMFLOAT3(2, 3, 2));
             //m_aabbs[offset + Spheres] = InitializeAABB(XMFLOAT3(2.25f, 0, 0.75f), XMFLOAT3(3, 3, 3));
